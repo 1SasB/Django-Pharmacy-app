@@ -21,7 +21,7 @@ class User(AbstractUser):
     #         return True
     #     return False
     is_patient = models.BooleanField(default=False)
-    is_pharmacist = models.BooleanField(default=False)
+    # is_pharmacist = models.BooleanField(default=False)
 
 
 
@@ -32,19 +32,23 @@ class Pharmacist(models.Model):
     email = models.EmailField(null=True)
     DOB = models.DateField(null=True)
     picture = models.ImageField(upload_to='profile_pic')
-    # user =  models.OneToOneField(User,on_delete=models.CASCADE)
+    user =  models.OneToOneField(User,on_delete=models.CASCADE)
 
-    def __Str__(self):
-        return self.first_name+' '+self.last_name
+    def __str__(self):
+        if self.first_name and self.last_name:
+            return self.first_name+' '+self.last_name
+        else:
+            return self.user.username
 
 
 class Pharmacy(models.Model):
     name = models.CharField(max_length=500)
     Description = models.TextField()
     owner = models.OneToOneField(Pharmacist,on_delete=models.CASCADE)
-    longitude = models.IntegerField()
-    latitude = models.IntegerField()
-
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+    
+    
     def __str__(self):
         return self.name
 
@@ -55,7 +59,7 @@ class Product(models.Model):
     exp_date = models.DateField()
     add_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    unit_price = models.IntegerField()
+    unit_price = models.FloatField()
     pharmacy = models.ForeignKey(Pharmacy,on_delete=models.CASCADE)
 
     def __str__(self):
@@ -71,10 +75,13 @@ class Patient(models.Model):
     email = models.EmailField(null=True)
     longitude =models.IntegerField(null=True)
     latitude = models.IntegerField(null=True)
-    # user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.first_name+' '+self.last_name
+        if self.first_name and self.last_name:
+            return self.first_name+' '+self.last_name
+        else:
+            return self.user.username
 
 
 # class Cart(models.Model):
@@ -90,11 +97,11 @@ def create_profile(sender,instance,created,*args,**kwargs):
     print(sender)
     print(instance)
     if created:
-        if instance.is_pharmacist:
-            instance.profile = Pharmacist.objects.create()
+        if not instance.is_patient:
+            instance.profile = Pharmacist.objects.create(user=instance)
             instance.save()
-        elif instance.is_patient == True:
-            instance.profile = Patient.objects.create()
+        else :
+            instance.profile = Patient.objects.create(user=instance)
             instance.save()
 
 # def create_pharmacist_profile(sender,instance,created,*args,**kwargs):
