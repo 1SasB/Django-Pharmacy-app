@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_list_or_404, render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views.generic.base import View
 from .models import *
@@ -18,11 +18,18 @@ def index(request):
     #     return render(request, 'pharm/patient/homepage.html')
     return render(request, 'pharm/logout.html')
 
+
 class HomeView(View):
     template_name = 'pharm/home.html'
+    
 
     def get(self,request):
-        return render(request,self.template_name)
+        products = Product.objects.all()
+        ctx = {
+            'products': products
+        }
+        return render(request,self.template_name,ctx)
+
 
 class PhHome(LoginRequiredMixin,View):
     template_name = 'pharm/pharmacist/home.html'

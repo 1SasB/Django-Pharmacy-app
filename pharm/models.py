@@ -9,19 +9,8 @@ from datetime import timedelta, date
 # Create your models here.
 
 class User(AbstractUser):
-    # @property
-    # def is_pharmacist(self):
-    #     if hasattr(self, 'pharmacist'):
-    #         return True
-    #     return False
 
-    # @property
-    # def is_patient(self):
-    #     if hasattr(self, 'patient'):
-    #         return True
-    #     return False
     is_patient = models.BooleanField(default=False)
-    # is_pharmacist = models.BooleanField(default=False)
 
 
 
